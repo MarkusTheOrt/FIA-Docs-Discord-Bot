@@ -16,11 +16,11 @@ job.start()
 Runtime.client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES] })
 
 Runtime.client.on('ready', () => {
+  Runtime.read()
   config.channels.forEach((id) => {
     Runtime.client.channels.fetch(id)
       .then((channel) => {
         Runtime.channels.push(channel)
-        Runtime.read()
         console.log(`Added Channel ${id}(${channel.name})`)
       })
       .catch(console.error)
