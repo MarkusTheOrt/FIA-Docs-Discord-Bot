@@ -21,7 +21,6 @@ Runtime.client.on('ready', () => {
       .then((channel) => {
         Runtime.channels.push(channel)
         Runtime.read()
-        fetchAndCheck()
       })
       .catch(console.error)
   })

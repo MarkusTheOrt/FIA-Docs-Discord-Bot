@@ -12,7 +12,7 @@ const Runtime = {
       Runtime.lastPubDate = moment(time, 'X')
     } else {
       fs.writeFileSync('./lastDate', '' + moment().format('X'))
-      Runtime.lastPubDate = moment.now()
+      Runtime.lastPubDate = moment().format('X')
     }
   },
   save: () => {
