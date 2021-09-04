@@ -57,6 +57,7 @@ const fetchAndCheck = async () => {
     }
   })
   if (bNew) {
+    console.log('Found new Entries')
     Runtime.lastPubDate = moment.now()
     Runtime.save()
   }

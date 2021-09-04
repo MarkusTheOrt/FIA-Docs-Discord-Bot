@@ -9,10 +9,12 @@ const Runtime = {
   read: () => {
     if (fs.existsSync('./lastDate')) {
       const time = fs.readFileSync('./lastDate', { encoding: 'utf-8', flag: 'r' })
-      Runtime.lastPubDate = moment(time, 'X')
+      Runtime.lastPubDate = moment(time, 'x')
+      console.log('Read last publish time from file:', moment(time, 'LLL'))
     } else {
       fs.writeFileSync('./lastDate', '' + moment.now())
       Runtime.lastPubDate = moment.now()
+      console.log('No lastDate found, creating new.')
     }
   },
   save: () => {
