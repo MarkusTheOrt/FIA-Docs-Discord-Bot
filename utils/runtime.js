@@ -11,8 +11,8 @@ const Runtime = {
       const time = fs.readFileSync('./lastDate', { encoding: 'utf-8', flag: 'r' })
       Runtime.lastPubDate = moment(time, 'X')
     } else {
-      fs.writeFileSync('./lastDate', '' + moment().format('X'))
-      Runtime.lastPubDate = moment().format('X')
+      fs.writeFileSync('./lastDate', '' + moment.now())
+      Runtime.lastPubDate = moment.now()
     }
   },
   save: () => {
