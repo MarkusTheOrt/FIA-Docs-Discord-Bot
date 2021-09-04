@@ -14,7 +14,6 @@ const fetchFia = async () => {
 const parseFIA = (html) => {
   const $ = cheerio.load(html)
   const anchors = $('a[href$=pdf]')
-  console.log(anchors)
   const items = []
   anchors.toArray().forEach((item) => {
     const newItem = {}
