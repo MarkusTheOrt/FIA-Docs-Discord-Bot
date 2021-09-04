@@ -38,7 +38,6 @@ const parseFIA = (html) => {
 }
 
 const fetchAndCheck = async () => {
-  if (Runtime.channel === undefined) return
   const html = await fetchFia()
   const results = parseFIA(html)
   let bNew = false
@@ -51,14 +50,14 @@ const fetchAndCheck = async () => {
         .setThumbnail('https://static.ort.dev/fiadontsueme/fia_logo.png')
         .setURL(encodeURI(item.url))
         .setDescription(item.title)
-        .setTimestamp(item.date.format('x'))
+        .setTimestamp(item.date.format('X'))
         .setTitle('Decision Document')
         .setFooter(`${item.date.format('LLLL')} CET`)
       Runtime.channels.forEach((channel) => { channel.send({ embeds: [embed] }) })
     }
   })
   if (bNew) {
-    Runtime.lastPubDate = moment(moment.now(), 'x')
+    Runtime.lastPubDate = moment().format('X')
     Runtime.save()
   }
 }

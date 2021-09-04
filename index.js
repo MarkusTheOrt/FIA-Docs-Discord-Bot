@@ -7,9 +7,11 @@ const Cron = require('cron')
 const config = require('./utils/config')
 
 // Run this job every minute.
-const job = new Cron.CronJob('* 1 * * * *', () => {
+const job = new Cron.CronJob('10 * * * * *', () => {
   fetchAndCheck()
 }, null, true)
+
+job.start()
 
 Runtime.client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES] })
 
@@ -19,7 +21,6 @@ Runtime.client.on('ready', () => {
       .then((channel) => {
         Runtime.channels.push(channel)
         Runtime.read()
-        job.start()
         fetchAndCheck()
       })
       .catch(console.error)
