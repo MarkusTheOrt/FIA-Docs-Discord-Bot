@@ -54,7 +54,7 @@ const fetchAndCheck = async () => {
         .setTimestamp(item.date.format('x'))
         .setTitle('Decision Document')
         .setFooter(`${item.date.format('LLLL')} CET`)
-      Runtime.channels.forEach((channel) => { channel.send({embeds: [embed] }) })
+      Runtime.channels.forEach((channel) => { channel.send({ embeds: [embed] }) })
     }
   })
   if (bNew) {
