@@ -42,7 +42,7 @@ const fetchAndCheck = async () => {
   const results = parseFIA(html)
   let bNew = false
   results.forEach((item) => {
-    if (item.date > Runtime.lastPubDate) {
+    if (item.date.format('x') > Runtime.lastPubDate) {
       bNew = true
       const embed = new MessageEmbed()
         .setColor('#002d5f')
