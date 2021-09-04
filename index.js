@@ -21,6 +21,7 @@ Runtime.client.on('ready', () => {
       .then((channel) => {
         Runtime.channels.push(channel)
         Runtime.read()
+        fetchAndCheck()
         console.log(`Added Channel ${id}(${channel.name})`)
       })
       .catch(console.error)

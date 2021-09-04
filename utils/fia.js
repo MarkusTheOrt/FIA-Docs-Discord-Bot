@@ -38,6 +38,7 @@ const parseFIA = (html) => {
 }
 
 const fetchAndCheck = async () => {
+  console.log('fetching new entries')
   const html = await fetchFia()
   const results = parseFIA(html)
   let bNew = false
@@ -52,7 +53,7 @@ const fetchAndCheck = async () => {
         .setDescription(item.title)
         .setTimestamp(item.date.format('x'))
         .setTitle('Decision Document')
-        .setFooter(`${item.date.format('LLLL')} CET`)
+        .setFooter(`${item.date.format('LLL')} CET`)
       Runtime.channels.forEach((channel) => { channel.send({ embeds: [embed] }) })
     }
   })
