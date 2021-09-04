@@ -13,22 +13,21 @@ const fetchFia = async () => {
 
 const parseFIA = (html) => {
   const $ = cheerio.load(html)
-  const anchors = $('a')
+  const anchors = $('a[href$=pdf]')
+  console.log(anchors)
   const items = []
   anchors.toArray().forEach((item) => {
-    if (item.attribs.href.endsWith('.pdf')) {
-      const newItem = {}
-      newItem.url = `https://www.fia.com${item.attribs.href}`
-      item.childNodes.forEach((child) => {
-        if (child.name === 'div' && child.attribs.class === 'published') {
-          newItem.date = moment.tz(child.children[0].next.children[0].data, 'D.M.YY HH:mm', 'CET')
-        }
-        if (child.name === 'div' && child.attribs.class === 'title') {
-          newItem.title = child.children[0].data.trim()
-        }
-      })
-      items.push(newItem)
-    }
+    const newItem = {}
+    newItem.url = `https://www.fia.com${item.attribs.href}`
+    item.childNodes.forEach((child) => {
+      if (child.name === 'div' && child.attribs.class === 'published') {
+        newItem.date = moment.tz(child.children[0].next.children[0].data, 'D.M.YY HH:mm', 'CET')
+      }
+      if (child.name === 'div' && child.attribs.class === 'title') {
+        newItem.title = child.children[0].data.trim()
+      }
+    })
+    items.push(newItem)
   })
   return items
 }

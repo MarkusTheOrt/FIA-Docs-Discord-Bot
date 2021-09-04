@@ -25,6 +25,4 @@ client.on('ready', () => {
     .catch(console.error)
 })
 
-client.on('error')
-
 client.login(Config.token)
