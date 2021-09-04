@@ -5,7 +5,7 @@ const Config = require('./utils/config')
 const Runtime = require('./utils/runtime')
 let Channel = null
 
-const job = new Cron.CronJob('10 * * * * *', () => {
+const job = new Cron.CronJob('0 1 * * * *', () => {
   if (Channel !== null) {
     fetchAndCheck()
   }
@@ -24,5 +24,7 @@ client.on('ready', () => {
     })
     .catch(console.error)
 })
+
+client.on('error')
 
 client.login(Config.token)
