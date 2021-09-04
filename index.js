@@ -15,9 +15,9 @@ Runtime.client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES] })
 
 Runtime.client.on('ready', () => {
   config.channels.forEach((id) => {
-    Runtime.client.channels.fetch(Config.channelId)
+    Runtime.client.channels.fetch(id)
       .then((channel) => {
-        Runtime.channel = channel
+        Runtime.channels.push(channel)
         Runtime.read()
         job.start()
         fetchAndCheck()

@@ -5,6 +5,7 @@ const moment = require('moment')
 // This structure supposedly holds all the data necessary at runtime.
 const Runtime = {
   lastPubDate: null,
+  channels: [],
   read: () => {
     if (fs.existsSync('./lastDate')) {
       const time = fs.readFileSync('./lastDate', { encoding: 'utf-8', flag: 'r' })
