@@ -1,6 +1,6 @@
 const config = {
-  channelId: process.env.CHANNEL || 'CHANNEL ID HERE',
-  token: process.env.TOKEN || 'BOT TOKEN HERE',
+  channels: process.env.CHANNELS || ['883648786264625162'],
+  token: process.env.TOKEN || 'Bot Token Here',
   fiaUrl: 'https://www.fia.com/documents/'
 }
 
