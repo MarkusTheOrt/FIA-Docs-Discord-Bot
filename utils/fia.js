@@ -1,16 +1,22 @@
 const Config = require('./config')
+const Runtime = require('./runtime')
+
 const fetch = require('node-fetch')
 const cheerio = require('cheerio')
 const moment = require('moment')
-const Runtime = require('./runtime')
 const { MessageEmbed } = require('discord.js')
 
+// Retrieves the FIA documents website.
 const fetchFia = async () => {
   const req = await fetch(Config.fiaUrl)
   const html = await req.text()
   return html
 }
 
+// Parses the html from the documents website, filtering out links that end in the .pdf file ext.
+// Then associates those with their respective titles and dates.
+// If any link has a timestamp newer than the latest update (from Runtime.lastPubDate) it gets
+// sent out to the discord channel.
 const parseFIA = (html) => {
   const $ = cheerio.load(html)
   const anchors = $('a[href$=pdf]')

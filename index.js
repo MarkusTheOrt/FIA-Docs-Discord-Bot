@@ -1,22 +1,21 @@
-const { Client, Intents } = require('discord.js')
-const fetchAndCheck = require('./utils/fia')
-const Cron = require('cron')
 const Config = require('./utils/config')
 const Runtime = require('./utils/runtime')
-let Channel = null
+const fetchAndCheck = require('./utils/fia')
 
-const job = new Cron.CronJob('0 1 * * * *', () => {
-  if (Channel !== null) {
-    fetchAndCheck()
-  }
+const { Client, Intents } = require('discord.js')
+const Cron = require('cron')
+
+// Run this job every minute.
+const job = new Cron.CronJob('* 1 * * * *', () => {
+  fetchAndCheck()
 }, null, true)
 
-const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES] })
+Runtime.client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES] })
 
-client.on('ready', () => {
-  client.channels.fetch(Config.channelId)
+Runtime.client.on('ready', () => {
+  // Once connected retrieve the channel and 'save' it into our applications runtime memory.
+  Runtime.client.channels.fetch(Config.channelId)
     .then((channel) => {
-      Channel = channel
       Runtime.channel = channel
       Runtime.read()
       job.start()
@@ -25,4 +24,4 @@ client.on('ready', () => {
     .catch(console.error)
 })
 
-client.login(Config.token)
+Runtime.client.login(Config.token)
