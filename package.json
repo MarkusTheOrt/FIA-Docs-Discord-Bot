@@ -4,7 +4,10 @@
   "description": "Bot that send updates to discord when new FIA documents arrive.",
   "main": "index.ts",
   "scripts": {
-    "test": "standard | snazzy"
+    "test": "standard | snazzy",
+    "reset": "rm ./lastDate",
+    "start": "pm2 start index.js",
+    "stop": "pm2 stop index.js"
   },
   "keywords": [
     "FIA",
@@ -13,7 +16,6 @@
   "author": "Markus Ort",
   "license": "ISC",
   "devDependencies": {
-    "husky": "^7.0.2",
     "snazzy": "^9.0.0",
     "standard": "^16.0.3"
   },
@@ -23,6 +25,7 @@
     "discord.js": "^13.1.0",
     "fetch": "^1.1.0",
     "moment": "^2.29.1",
-    "pdf2pic": "^2.1.4"
+    "pdf2pic": "^2.1.4",
+    "pm2": "^5.1.1"
   }
 }
