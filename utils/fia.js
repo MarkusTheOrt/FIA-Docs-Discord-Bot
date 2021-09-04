@@ -37,8 +37,10 @@ const fetchAndCheck = async () => {
   if (Runtime.channel === undefined) return
   const html = await fetchFia()
   const results = parseFIA(html)
+  let bNew = false
   results.forEach((item) => {
     if (item.date > Runtime.lastPubDate) {
+      bNew = true
       const embed = new MessageEmbed()
         .setColor('#002d5f')
         .setAuthor('FIA')
@@ -51,8 +53,10 @@ const fetchAndCheck = async () => {
       Runtime.channel.send({ embeds: [embed] })
     }
   })
-  Runtime.lastPubDate = moment(moment.now(), 'x')
-  Runtime.save()
+  if (bNew) {
+    Runtime.lastPubDate = moment(moment.now(), 'x')
+    Runtime.save()
+  }
 }
 
 module.exports = fetchAndCheck
