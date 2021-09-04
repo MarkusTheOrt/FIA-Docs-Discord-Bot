@@ -44,7 +44,7 @@ const fetchAndCheck = async () => {
       const embed = new MessageEmbed()
         .setColor('#002d5f')
         .setAuthor('FIA')
-        .setThumbnail('https://static.ort.dev/pub/brave_OPF8YCknDX.png')
+        .setThumbnail('https://static.ort.dev/fiadontsueme/fia_logo.png')
         .setURL(encodeURI(item.url))
         .setDescription(item.title)
         .setTimestamp(item.date.format('x'))
