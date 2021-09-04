@@ -50,14 +50,14 @@ const fetchAndCheck = async () => {
         .setThumbnail('https://static.ort.dev/fiadontsueme/fia_logo.png')
         .setURL(encodeURI(item.url))
         .setDescription(item.title)
-        .setTimestamp(item.date.format('X'))
+        .setTimestamp(item.date.format('x'))
         .setTitle('Decision Document')
         .setFooter(`${item.date.format('LLLL')} CET`)
       Runtime.channels.forEach((channel) => { channel.send({ embeds: [embed] }) })
     }
   })
   if (bNew) {
-    Runtime.lastPubDate = moment().format('X')
+    Runtime.lastPubDate = moment.now()
     Runtime.save()
   }
 }
