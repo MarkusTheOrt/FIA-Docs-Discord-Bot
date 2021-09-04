@@ -1,0 +1,23 @@
+{
+  "name": "fia-discord-bot",
+  "version": "1.0.0",
+  "description": "Bot that send updates to discord when new FIA documents arrive.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "standard | snazzy"
+  },
+  "keywords": [
+    "FIA",
+    "bot"
+  ],
+  "author": "Markus Ort",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^7.0.2",
+    "snazzy": "^9.0.0",
+    "standard": "^16.0.3"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.10"
+  }
+}
