@@ -7,7 +7,6 @@ const Runtime = {
     if (fs.existsSync('./lastDate')) {
       const time = fs.readFileSync('./lastDate', { encoding: 'utf-8', flag: 'r' })
       Runtime.lastPubDate = moment(time, 'x')
-      console.log(Runtime.lastPubDate)
     } else {
       fs.writeFileSync('./lastDate', '' + moment.now())
       Runtime.lastPubDate = moment.now()
