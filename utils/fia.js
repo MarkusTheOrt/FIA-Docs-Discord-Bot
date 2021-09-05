@@ -63,7 +63,7 @@ const fetchAndCheck = async () => {
   console.log('fetching new entries')
   const html = await fetchFia()
   // Post in correct order
-  const newItems = parseFIA(html).sort((a, b) => a.date < b.date)
+  const newItems = parseFIA(html).sort((a, b) => a.date > b.date)
   const body = makePostContent(newItems)
   Config.hooks.forEach(async (hook) => {
     await fetch(hook, {
