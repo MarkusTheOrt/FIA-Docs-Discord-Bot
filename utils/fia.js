@@ -30,41 +30,41 @@ const parseFIA = (html) => {
         newItem.title = child.children[0].data.trim()
       }
     })
-    items.push(newItem)
+    if (newItem.date > moment(Runtime.lastPubDate, 'x')) {
+      items.push(newItem)
+    }
   })
   return items
 }
 
 const makePostContent = (items) => {
-  const embeds = items.map((item) => {
-    return {
-      color: '11615',
-      author: {
-        name: 'FIA'
-      },
-      title: 'Decision Document',
-      url: encodeURI(item.url),
-      thumbnail: {
-        url: 'https://static.ort.dev/fiadontsueme/fia_logo.png'
-      },
-      description: item.title,
-      footer: {
-        text: item.date.format('lll')
-      }
-    }
-  })
   return JSON.stringify({
-    embeds: embeds
+    embeds: items.map((item) => {
+      return {
+        color: '11615',
+        author: {
+          name: 'FIA'
+        },
+        title: 'Decision Document',
+        url: encodeURI(item.url),
+        thumbnail: {
+          url: 'https://static.ort.dev/fiadontsueme/fia_logo.png'
+        },
+        description: item.title,
+        footer: {
+          text: item.date.format('lll')
+        }
+      }
+    })
   })
 }
 
 const fetchAndCheck = async () => {
   console.log('fetching new entries')
   const html = await fetchFia()
-  const results = parseFIA(html)
-  const newItems = results.filter((item) => { return item.date > moment(Runtime.lastPubDate, 'x') })
+  // Post in correct order
+  const newItems = parseFIA(html).sort((a, b) => a.date < b.date)
   const body = makePostContent(newItems)
-  console.log(body)
   Config.hooks.forEach(async (hook) => {
     await fetch(hook, {
       method: 'POST',
