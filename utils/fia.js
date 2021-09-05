@@ -1,10 +1,8 @@
-const Config = require('./config')
-const Runtime = require('./runtime')
-
-const fetch = require('node-fetch')
-const cheerio = require('cheerio')
-const moment = require('moment')
-const { MessageEmbed } = require('discord.js')
+import fetch from 'node-fetch'
+import Config from './config.js'
+import Runtime from './runtime.js'
+import cheerio from 'cheerio'
+import moment from 'moment'
 
 // Retrieves the FIA documents website.
 const fetchFia = async () => {
@@ -37,31 +35,50 @@ const parseFIA = (html) => {
   return items
 }
 
+const makePostContent = (items) => {
+  const embeds = items.map((item) => {
+    return {
+      color: '11615',
+      author: {
+        name: 'FIA'
+      },
+      title: 'Decision Document',
+      url: encodeURI(item.url),
+      thumbnail: {
+        url: 'https://static.ort.dev/fiadontsueme/fia_logo.png'
+      },
+      description: item.title,
+      footer: {
+        text: item.date.format('lll')
+      }
+    }
+  })
+  return JSON.stringify({
+    embeds: embeds
+  })
+}
+
 const fetchAndCheck = async () => {
   console.log('fetching new entries')
   const html = await fetchFia()
   const results = parseFIA(html)
-  let bNew = false
-  results.forEach((item) => {
-    if (item.date.format('x') > Runtime.lastPubDate) {
-      bNew = true
-      const embed = new MessageEmbed()
-        .setColor('#002d5f')
-        .setAuthor('FIA')
-        .setThumbnail('https://static.ort.dev/fiadontsueme/fia_logo.png')
-        .setURL(encodeURI(item.url))
-        .setDescription(item.title)
-        .setTimestamp(item.date.format('x'))
-        .setTitle('Decision Document')
-        .setFooter(`${item.date.format('LLL')} CET`)
-      Runtime.channels.forEach((channel) => { channel.send({ embeds: [embed] }) })
-    }
+  const newItems = results.filter((item) => { return item.date > moment(Runtime.lastPubDate, 'x') })
+  const body = makePostContent(newItems)
+  console.log(body)
+  Config.hooks.forEach(async (hook) => {
+    await fetch(hook, {
+      method: 'POST',
+      body: body,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   })
-  if (bNew) {
-    console.log('Found new Entries')
+  if (newItems.length > 0) {
+    console.log(`Found ${newItems.length} new Entries`)
     Runtime.lastPubDate = moment.now()
     Runtime.save()
   }
 }
 
-module.exports = fetchAndCheck
+export default fetchAndCheck

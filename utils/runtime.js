@@ -1,5 +1,5 @@
-const fs = require('fs')
-const moment = require('moment')
+import fs from 'fs'
+import moment from 'moment'
 
 // Runtime memory structure.
 // This structure supposedly holds all the data necessary at runtime.
@@ -22,4 +22,4 @@ const Runtime = {
   }
 }
 
-module.exports = Runtime
+export default Runtime
