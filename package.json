@@ -2,8 +2,8 @@
   "name": "fia-discord-bot",
   "version": "1.0.0",
   "description": "Bot that send updates to discord when new FIA documents arrive.",
-  "main": "index.ts",
-  "type": "module",
+  "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "test": "standard | snazzy",
     "reset": "rm ./lastDate",
@@ -23,10 +23,8 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.10",
     "cron": "^1.8.2",
-    "fetch": "^1.1.0",
     "moment": "^2.29.1",
-    "node-fetch": "^3.0.0",
-    "pdf2pic": "^2.1.4",
+    "node-fetch": "^2.6.2",
     "pm2": "^5.1.1"
   }
 }

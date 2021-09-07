@@ -3,4 +3,4 @@ const config = {
   fiaUrl: 'https://www.fia.com/documents/'
 }
 
-export default config
+module.exports = config

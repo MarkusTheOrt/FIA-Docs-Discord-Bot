@@ -1,6 +1,6 @@
-import fetchAndCheck from './utils/fia.js'
-import Cron from 'cron'
-import Runtime from './utils/runtime.js'
+const fetchAndCheck = require('./utils/fia.js')
+const Cron = require('cron')
+const Runtime = require('./utils/runtime.js')
 
 // Run this job every minute
 const job = new Cron.CronJob('*/1 * * * *', () => {

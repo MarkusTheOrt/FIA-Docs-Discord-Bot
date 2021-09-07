@@ -1,8 +1,8 @@
-import fetch from 'node-fetch'
-import Config from './config.js'
-import Runtime from './runtime.js'
-import cheerio from 'cheerio'
-import moment from 'moment'
+const fetch = require('node-fetch')
+const Config = require('./config.js')
+const Runtime = require('./runtime.js')
+const cheerio = require('cheerio')
+const Moment = require('moment')
 
 // Retrieves the FIA documents website.
 const fetchFia = async () => {
@@ -24,13 +24,13 @@ const parseFIA = (html) => {
     newItem.url = `https://www.fia.com${item.attribs.href}`
     item.childNodes.forEach((child) => {
       if (child.name === 'div' && child.attribs.class === 'published') {
-        newItem.date = moment.tz(child.children[0].next.children[0].data, 'D.M.YY HH:mm', 'Europe/Berlin')
+        newItem.date = Moment.tz(child.children[0].next.children[0].data, 'D.M.YY HH:mm', 'Europe/Berlin')
       }
       if (child.name === 'div' && child.attribs.class === 'title') {
         newItem.title = child.children[0].data.trim()
       }
     })
-    if (newItem.date > moment(Runtime.lastPubDate, 'x')) {
+    if (newItem.date > Moment(Runtime.lastPubDate, 'x')) {
       items.push(newItem)
     }
   })
@@ -76,9 +76,9 @@ const fetchAndCheck = async () => {
   })
   if (newItems.length > 0) {
     console.log(`Found ${newItems.length} new Entries`)
-    Runtime.lastPubDate = moment.now()
+    Runtime.lastPubDate = Moment.now()
     Runtime.save()
   }
 }
 
-export default fetchAndCheck
+module.exports = fetchAndCheck
