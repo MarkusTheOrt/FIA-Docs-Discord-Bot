@@ -7,8 +7,14 @@ const Moment = require('moment')
 // Retrieves the FIA documents website.
 const fetchFia = async () => {
   const req = await fetch(Config.fiaUrl)
-  const html = await req.text()
-  return html
+  if (req.ok === true){
+    const html = await req.text()
+    console.log(req)
+    return html
+    
+  }
+  console.log(`Encountered a ${req.status} on ${Config.fiaUrl}`)
+  return ""
 }
 
 // Parses the html from the documents website, filtering out links that end in the .pdf file ext.
