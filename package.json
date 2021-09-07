@@ -7,8 +7,8 @@
   "scripts": {
     "test": "standard | snazzy",
     "reset": "rm ./lastDate",
-    "start": "pm2 start index.js",
-    "stop": "pm2 stop index.js"
+    "start": "pm2 start index.js -n FIA-Docs",
+    "stop": "pm2 stop index.js -n FIA-Docs"
   },
   "keywords": [
     "FIA",
