@@ -6,14 +6,14 @@ const Moment = require('moment')
 
 // Retrieves the FIA documents website.
 const fetchFia = async () => {
-  console.log(`Querying new Documents`)
+  console.log('Querying new Documents')
   const req = await fetch(Config.fiaUrl)
-  if (req.ok === true){
+  if (req.ok === true) {
     const html = await req.text()
     return html
   }
   console.log(`Encountered a ${req.status} on ${Config.fiaUrl}`)
-  return ""
+  return ''
 }
 
 // Parses the html from the documents website, filtering out links that end in the .pdf file ext.
@@ -24,17 +24,18 @@ const parseFIA = (html) => {
   const $ = cheerio.load(html)
   const anchors = $('a[href$=pdf]')
   anchors.toArray().forEach((item) => {
-    const newItem = {}
+    const newItem = { title: undefined, date: undefined, url: undefined }
     newItem.url = `https://www.fia.com${item.attribs.href}`
-    item.childNodes.forEach((child) => {
-      if (child.name === 'div' && child.attribs.class === 'published') {
-        newItem.date = Moment.tz(child.children[0].next.children[0].data, 'D.M.YY HH:mm', 'Europe/Berlin')
-      }
-      if (child.name === 'div' && child.attribs.class === 'title') {
-        newItem.title = child.children[0].data.trim()
-      }
-    })
-    if (newItem.date > Runtime.lastPubDate) {
+    try {
+      const title = $(`a[href='${item.attribs.href}'] .title`)
+      newItem.title = title.first().text().trim()
+    } catch (error) {}
+    try {
+      const stringDate = $(`a[href='${item.attribs.href}'] .published .date-display-single`)
+      newItem.date = Moment.tz(stringDate.first().text().trim(), 'D.M.YY HH:mm', 'Europe/Berlin')
+    } catch (error) {}
+    if (newItem.date > Runtime.lastPubDate &&
+      (newItem.title !== undefined && newItem.url !== undefined && newItem.date !== undefined)) {
       Runtime.queue.push(newItem)
     }
   })
@@ -67,7 +68,7 @@ const makeEmbed = (item) => {
 // Executes the entire Job
 const fetchAndCheck = async () => {
   parseFIA(await fetchFia())
-  if(Runtime.queue.length === 0) return;
+  if (Runtime.queue.length === 0) return
   Runtime.queue.sort((a, b) => a.date.format('x') - b.date.format('x'))
   const sendInterval = setInterval(() => {
     const body = makeRequestBody()
@@ -78,16 +79,16 @@ const fetchAndCheck = async () => {
         headers: {
           'Content-Type': 'application/json'
         }
-      })     
+      })
     })
     if (body.length > 0) {
       console.log(`sent ${body.length} new embeds`)
       Runtime.save()
     }
-    if(Runtime.queue.length === 0){
+    if (Runtime.queue.length === 0) {
       clearInterval(sendInterval)
     }
-  }, 500) 
+  }, 500)
 }
 
 module.exports = fetchAndCheck
