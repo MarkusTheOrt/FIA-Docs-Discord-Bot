@@ -5,20 +5,20 @@ const moment = require('moment')
 // This structure supposedly holds all the data necessary at runtime.
 const Runtime = {
   lastPubDate: null,
-  channels: [],
+  queue: [],
   read: () => {
     if (fs.existsSync('./lastDate')) {
       const time = fs.readFileSync('./lastDate', { encoding: 'utf-8', flag: 'r' })
       Runtime.lastPubDate = moment(time, 'x')
       console.log('Read last publish time from file:', Runtime.lastPubDate.format('lll'))
     } else {
-      fs.writeFileSync('./lastDate', '' + moment.now())
-      Runtime.lastPubDate = moment.now()
+      Runtime.save()
       console.log('No lastDate found, creating new.')
     }
   },
   save: () => {
-    fs.writeFileSync('./lastDate', '' + Runtime.lastPubDate)
+    Runtime.lastPubDate = moment(moment.now(), 'x')
+    fs.writeFileSync('./lastDate', '' + Runtime.lastPubDate.format('x'))
   }
 }
 

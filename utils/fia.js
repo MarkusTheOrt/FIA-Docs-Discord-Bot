@@ -6,12 +6,11 @@ const Moment = require('moment')
 
 // Retrieves the FIA documents website.
 const fetchFia = async () => {
+  console.log(`Querying new Documents`)
   const req = await fetch(Config.fiaUrl)
   if (req.ok === true){
     const html = await req.text()
-    console.log(req)
     return html
-    
   }
   console.log(`Encountered a ${req.status} on ${Config.fiaUrl}`)
   return ""
@@ -24,7 +23,6 @@ const fetchFia = async () => {
 const parseFIA = (html) => {
   const $ = cheerio.load(html)
   const anchors = $('a[href$=pdf]')
-  const items = []
   anchors.toArray().forEach((item) => {
     const newItem = {}
     newItem.url = `https://www.fia.com${item.attribs.href}`
@@ -36,55 +34,60 @@ const parseFIA = (html) => {
         newItem.title = child.children[0].data.trim()
       }
     })
-    if (newItem.date > Moment(Runtime.lastPubDate, 'x')) {
-      items.push(newItem)
+    if (newItem.date > Runtime.lastPubDate) {
+      Runtime.queue.push(newItem)
     }
   })
-  return items
 }
 
-const makePostContent = (items) => {
-  return JSON.stringify({
-    embeds: items.map((item) => {
-      return {
-        color: '11615',
-        author: {
-          name: 'FIA'
-        },
-        title: 'Decision Document',
-        url: encodeURI(item.url),
-        thumbnail: {
-          url: 'https://static.ort.dev/fiadontsueme/fia_logo.png'
-        },
-        description: item.title,
-        footer: {
-          text: item.date.format('lll')
-        }
-      }
-    })
-  })
+const makeRequestBody = () => {
+  const items = Runtime.queue.splice(0, 8).sort((a, b) => a.date.format('x') - b.date.format('x'))
+  return items.map((item) => makeEmbed(item))
 }
 
-const fetchAndCheck = async () => {
-  console.log('fetching new entries')
-  const html = await fetchFia()
-  // Post in correct order
-  const newItems = parseFIA(html).sort((a, b) => a.date > b.date)
-  const body = makePostContent(newItems)
-  Config.hooks.forEach(async (hook) => {
-    await fetch(hook, {
-      method: 'POST',
-      body: body,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-  })
-  if (newItems.length > 0) {
-    console.log(`Found ${newItems.length} new Entries`)
-    Runtime.lastPubDate = Moment.now()
-    Runtime.save()
+// Creates the Embed object used for the Discord Webhook URL
+const makeEmbed = (item) => {
+  return {
+    color: '11615',
+    author: {
+      name: 'FIA'
+    },
+    title: 'Decision Document',
+    url: encodeURI(item.url),
+    thumbnail: {
+      url: 'https://static.ort.dev/fiadontsueme/fia_logo.png'
+    },
+    description: item.title,
+    footer: {
+      text: item.date.format('lll')
+    }
   }
+}
+
+// Executes the entire Job
+const fetchAndCheck = async () => {
+  parseFIA(await fetchFia())
+  if(Runtime.queue.length === 0) return;
+  Runtime.queue.sort((a, b) => a.date.format('x') - b.date.format('x'))
+  const sendInterval = setInterval(() => {
+    const body = makeRequestBody()
+    Config.hooks.forEach(async (hook) => {
+      await fetch(hook, {
+        method: 'POST',
+        body: JSON.stringify({ embeds: body }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })     
+    })
+    if (body.length > 0) {
+      console.log(`sent ${body.length} new embeds`)
+      Runtime.save()
+    }
+    if(Runtime.queue.length === 0){
+      clearInterval(sendInterval)
+    }
+  }, 500) 
 }
 
 module.exports = fetchAndCheck
