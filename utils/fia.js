@@ -27,11 +27,11 @@ const parseFIA = (html) => {
     const newItem = { title: undefined, date: undefined, url: undefined }
     newItem.url = `https://www.fia.com${item.attribs.href}`
     try {
-      const title = $(`a[href='${item.attribs.href}'] .title`)
+      const title = $(`a[href="${item.attribs.href}"] .title`)
       newItem.title = title.first().text().trim()
     } catch (error) {}
     try {
-      const stringDate = $(`a[href='${item.attribs.href}'] .published .date-display-single`)
+      const stringDate = $(`a[href="${item.attribs.href}"] .published .date-display-single`)
       newItem.date = Moment.tz(stringDate.first().text().trim(), 'D.M.YY HH:mm', 'Europe/Berlin')
     } catch (error) {}
     if (newItem.date > Runtime.lastPubDate &&
