@@ -11,7 +11,7 @@ const job = new Cron.CronJob('*/1 * * * *', () => {
 const cleanJob = new Cron.CronJob('*/30 * * * *', () => {
   const indicesToClean = []
   Runtime.lastDocs.forEach((item, idx) => {
-    if (item.date < Moment().subtract(2, 'hour')) {
+    if (item.date < Moment().subtract(2, 'hours')) {
       indicesToClean.push(idx)
     }
   })
