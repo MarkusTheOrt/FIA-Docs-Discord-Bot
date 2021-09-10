@@ -22,30 +22,34 @@ const fetchFia = async () => {
 // sent out to the discord channel.
 const parseFIA = (html) => {
   const $ = cheerio.load(html)
-  const anchors = $('a[href$=pdf]')
-  anchors.toArray().forEach((item) => {
-    const newItem = { title: undefined, date: undefined, url: undefined }
-    newItem.url = `https://www.fia.com${item.attribs.href}`
-    try {
-      const title = $(`a[href="${item.attribs.href}"] .title`)
-      newItem.title = title.first().text().trim()
-    } catch (error) {}
-    try {
-      const stringDate = $(`a[href="${item.attribs.href}"] .published .date-display-single`)
-      newItem.date = Moment.tz(stringDate.first().text().trim(), 'D.M.YY HH:mm', 'Europe/Berlin')
-    } catch (error) {}
-    if (newItem.title !== undefined &&
-        newItem.url !== undefined &&
-        newItem.date !== undefined &&
-        newItem.date > Moment().subtract(1, 'hours')) {
-      if (!Runtime.lastDocs.find((item) => {
-        return item.url === newItem.url && item.title === newItem.title
-      })) {
-        Runtime.queue.push(newItem)
-        Runtime.lastDocs.push(newItem)
+  try {
+    const anchors = $('.event-title.active + ul a[href$=pdf]')
+    anchors.toArray().forEach((item) => {
+      const newItem = { title: undefined, date: undefined, url: undefined }
+      newItem.url = `https://www.fia.com${item.attribs.href}`
+      try {
+        const title = $(`a[href="${item.attribs.href}"] .title`)
+        newItem.title = title.first().text().trim()
+      } catch (error) {}
+      try {
+        const stringDate = $(`a[href="${item.attribs.href}"] .published .date-display-single`)
+        newItem.date = Moment.tz(stringDate.first().text().trim(), 'D.M.YY HH:mm', 'Europe/Berlin')
+      } catch (error) {}
+      if (newItem.title !== undefined &&
+          newItem.url !== undefined &&
+          newItem.date !== undefined &&
+          newItem.date > Moment().subtract(1, 'hours')) {
+        if (!Runtime.lastDocs.find((item) => {
+          return item.url === newItem.url && item.title === newItem.title
+        })) {
+          Runtime.queue.push(newItem)
+          Runtime.lastDocs.push(newItem)
+        }
       }
-    }
-  })
+    })
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 const makeRequestBody = () => {
