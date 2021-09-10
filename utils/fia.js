@@ -43,7 +43,6 @@ const parseFIA = (html) => {
       })) {
         Runtime.queue.push(newItem)
         Runtime.lastDocs.push(newItem)
-        console.log('found')
       }
     }
   })
@@ -95,7 +94,6 @@ const fetchAndCheck = async () => {
     }
     if (Runtime.queue.length === 0) {
       clearInterval(sendInterval)
-      console.log(Runtime.lastDocs)
     }
   }, 500)
 }
