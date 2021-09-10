@@ -34,9 +34,17 @@ const parseFIA = (html) => {
       const stringDate = $(`a[href="${item.attribs.href}"] .published .date-display-single`)
       newItem.date = Moment.tz(stringDate.first().text().trim(), 'D.M.YY HH:mm', 'Europe/Berlin')
     } catch (error) {}
-    if (newItem.date > Runtime.lastPubDate &&
-      (newItem.title !== undefined && newItem.url !== undefined && newItem.date !== undefined)) {
-      Runtime.queue.push(newItem)
+    if (newItem.title !== undefined &&
+        newItem.url !== undefined &&
+        newItem.date !== undefined &&
+        newItem.date > Moment().subtract(1, 'hours')) {
+      if (!Runtime.lastDocs.find((item) => {
+        return item.url === newItem.url && item.title === newItem.title
+      })) {
+        Runtime.queue.push(newItem)
+        Runtime.lastDocs.push(newItem)
+        console.log('found')
+      }
     }
   })
 }
@@ -51,14 +59,14 @@ const makeEmbed = (item) => {
   return {
     color: '11615',
     author: {
-      name: 'FIA'
+      name: 'FIA - Decision Document'
     },
-    title: 'Decision Document',
+    title: item.title,
     url: encodeURI(item.url),
     thumbnail: {
       url: 'https://static.ort.dev/fiadontsueme/fia_logo.png'
     },
-    description: item.title,
+    description: '',
     footer: {
       text: item.date.format('lll')
     }
@@ -87,6 +95,7 @@ const fetchAndCheck = async () => {
     }
     if (Runtime.queue.length === 0) {
       clearInterval(sendInterval)
+      console.log(Runtime.lastDocs)
     }
   }, 500)
 }

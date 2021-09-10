@@ -1,5 +1,5 @@
 const fs = require('fs')
-const moment = require('moment')
+const Moment = require('moment')
 
 // Runtime memory structure.
 // This structure supposedly holds all the data necessary at runtime.
@@ -9,7 +9,7 @@ const Runtime = {
   read: () => {
     if (fs.existsSync('./lastDate')) {
       const time = fs.readFileSync('./lastDate', { encoding: 'utf-8', flag: 'r' })
-      Runtime.lastPubDate = moment(time, 'x')
+      Runtime.lastPubDate = Moment.tz(time, 'x', 'Europe/Berlin')
       console.log('Read last publish time from file:', Runtime.lastPubDate.format('lll'))
     } else {
       Runtime.save()
@@ -17,9 +17,10 @@ const Runtime = {
     }
   },
   save: () => {
-    Runtime.lastPubDate = moment(moment.now(), 'x')
+    Runtime.lastPubDate = Moment.tz(Moment.now(), 'x', 'Europe/Berlin')
     fs.writeFileSync('./lastDate', '' + Runtime.lastPubDate.format('x'))
-  }
+  },
+  lastDocs: []
 }
 
 module.exports = Runtime
