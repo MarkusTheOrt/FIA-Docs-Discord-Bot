@@ -21,8 +21,8 @@ const cleanJob = new Cron.CronJob('*/30 * * * *', () => {
   console.log('Running Cleanup.')
 })
 
+Runtime.first = true
 console.log('Started FIA-Douments-Discord-Webhook.')
-Runtime.read()
 fetchAndCheck()
 job.start()
 cleanJob.start()

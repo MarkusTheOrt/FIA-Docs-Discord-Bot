@@ -30,15 +30,15 @@ const parseFIA = (html) => {
       try {
         const title = $(`a[href="${item.attribs.href}"] .title`)
         newItem.title = title.first().text().trim()
-      } catch (error) {}
+      } catch (error) { console.log('Error when querying CSS Selector for Item Title', error) }
       try {
         const stringDate = $(`a[href="${item.attribs.href}"] .published .date-display-single`)
         newItem.date = Moment.tz(stringDate.first().text().trim(), 'D.M.YY HH:mm', 'Europe/Berlin')
-      } catch (error) {}
+      } catch (error) { console.log('Error when querying CSS Selector for Item Date', error) }
       if (newItem.title !== undefined &&
-          newItem.url !== undefined &&
-          newItem.date !== undefined &&
-          newItem.date > Moment().subtract(1, 'hours')) {
+        newItem.url !== undefined &&
+        newItem.date !== undefined &&
+        newItem.date > Moment().subtract(1, 'hours')) {
         if (!Runtime.lastDocs.find((item) => {
           return item.url === newItem.url && item.title === newItem.title
         })) {
@@ -48,7 +48,7 @@ const parseFIA = (html) => {
       }
     })
   } catch (err) {
-    console.log(err)
+    console.log('Error when querying CSS Selector on FIA Website', err)
   }
 }
 
@@ -80,6 +80,11 @@ const makeEmbed = (item) => {
 const fetchAndCheck = async () => {
   parseFIA(await fetchFia())
   if (Runtime.queue.length === 0) return
+  if (Runtime.first) {
+    Runtime.queue.splice(0, Runtime.queue.length)
+    Runtime.first = false
+    console.log('Skipping Embeds on First-start')
+  }
   Runtime.queue.sort((a, b) => a.date.format('x') - b.date.format('x'))
   const sendInterval = setInterval(() => {
     const body = makeRequestBody()
@@ -94,7 +99,6 @@ const fetchAndCheck = async () => {
     })
     if (body.length > 0) {
       console.log(`sent ${body.length} new embeds`)
-      Runtime.save()
     }
     if (Runtime.queue.length === 0) {
       clearInterval(sendInterval)
