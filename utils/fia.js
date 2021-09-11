@@ -26,7 +26,7 @@ const parseFIA = (html) => {
     const anchors = $('.event-title.active + ul a[href$=pdf]')
     anchors.toArray().forEach((item) => {
       const newItem = { title: undefined, date: undefined, url: undefined }
-      newItem.url = `https://www.fia.com${item.attribs.href}`
+      newItem.url = encodeURI(`https://www.fia.com${item.attribs.href}`)
       try {
         const title = $(`a[href="${item.attribs.href}"] .title`)
         newItem.title = title.first().text().trim()
@@ -38,7 +38,7 @@ const parseFIA = (html) => {
       if (newItem.title !== undefined &&
         newItem.url !== undefined &&
         newItem.date !== undefined &&
-        newItem.date > Moment().subtract(1, 'hours')) {
+        newItem.date > Moment.tz('Europe/Berlin').subtract(1, 'hours')) {
         if (!Runtime.lastDocs.find((item) => {
           return item.url === newItem.url && item.title === newItem.title
         })) {
@@ -65,7 +65,7 @@ const makeEmbed = (item) => {
       name: 'FIA - Decision Document'
     },
     title: item.title,
-    url: encodeURI(item.url),
+    url: item.url,
     thumbnail: {
       url: 'https://static.ort.dev/fiadontsueme/fia_logo.png'
     },
@@ -79,6 +79,7 @@ const makeEmbed = (item) => {
 // Executes the entire Job
 const fetchAndCheck = async () => {
   parseFIA(await fetchFia())
+  console.log(Runtime.lastDocs)
   if (Runtime.queue.length === 0) return
   if (Runtime.first) {
     Runtime.queue.splice(0, Runtime.queue.length)
