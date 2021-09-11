@@ -4,7 +4,7 @@ const Runtime = require('./utils/runtime.js')
 const Moment = require('moment')
 
 // Run this job every minute
-const job = new Cron.CronJob('*/1 * * * *', async () => {
+const job = new Cron.CronJob('1-29,31-59 * * * *', async () => {
   if (Runtime.cleaning) {
     const indicesToClean = []
     Runtime.lastDocs.forEach((item, idx) => {
@@ -22,7 +22,7 @@ const job = new Cron.CronJob('*/1 * * * *', async () => {
   await fetchAndCheck()
 })
 
-const cleanJob = new Cron.CronJob('*/2 * * * *', () => {
+const cleanJob = new Cron.CronJob('*/30 * * * *', () => {
   Runtime.cleaning = true
 })
 

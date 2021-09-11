@@ -79,7 +79,6 @@ const makeEmbed = (item) => {
 // Executes the entire Job
 const fetchAndCheck = async () => {
   parseFIA(await fetchFia())
-  console.log(Runtime.lastDocs)
   if (Runtime.queue.length === 0) return
   if (Runtime.first) {
     Runtime.queue.splice(0, Runtime.queue.length)
