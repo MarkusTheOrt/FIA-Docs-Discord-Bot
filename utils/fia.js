@@ -24,6 +24,8 @@ const parseFIA = (html) => {
   const $ = cheerio.load(html)
   try {
     const anchors = $('.event-title.active + ul a[href$=pdf]')
+    const currentEvent = $('.event-title.active')
+    Runtime.event = currentEvent.text();
     anchors.toArray().forEach((item) => {
       const newItem = { title: undefined, date: undefined, url: undefined }
       newItem.url = encodeURI(`https://www.fia.com${item.attribs.href}`)
@@ -38,9 +40,9 @@ const parseFIA = (html) => {
       if (newItem.title !== undefined &&
         newItem.url !== undefined &&
         newItem.date !== undefined &&
-        newItem.date > Moment.tz('Europe/Berlin').subtract(1, 'hours')) {
+        newItem.date > Moment.tz('Europe/Berlin').subtract(2, 'hours')) {
         if (!Runtime.lastDocs.find((item) => {
-          return item.url === newItem.url && item.title === newItem.title
+          return item.url === newItem.url
         })) {
           Runtime.queue.push(newItem)
           Runtime.lastDocs.push(newItem)
@@ -62,7 +64,7 @@ const makeEmbed = (item) => {
   return {
     color: '11615',
     author: {
-      name: 'FIA - Decision Document'
+      name: Runtime.event.length > 0 ? 'FIA Document - ' + Runtime.event : 'FIA Document'
     },
     title: item.title,
     url: item.url,

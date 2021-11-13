@@ -8,7 +8,7 @@ const job = new Cron.CronJob('1-29,31-59 * * * *', async () => {
   if (Runtime.cleaning) {
     const indicesToClean = []
     Runtime.lastDocs.forEach((item, idx) => {
-      if (item.date < Moment.tz('Europe/Berlin').subtract(2, 'hours')) {
+      if (item.date < Moment.tz('Europe/Berlin').subtract(1, 'days')) {
         indicesToClean.push(idx)
       }
     })
@@ -22,7 +22,7 @@ const job = new Cron.CronJob('1-29,31-59 * * * *', async () => {
   await fetchAndCheck()
 })
 
-const cleanJob = new Cron.CronJob('*/30 * * * *', () => {
+const cleanJob = new Cron.CronJob('0 4 */1 * *', () => {
   Runtime.cleaning = true
 })
 

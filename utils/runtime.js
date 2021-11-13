@@ -3,8 +3,9 @@
 const Runtime = {
   queue: [],
   lastDocs: [],
-  first: true,
-  cleaning: false
+  first: false,
+  cleaning: false,
+  event: ''
 }
 
 module.exports = Runtime
