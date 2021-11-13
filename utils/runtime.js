@@ -3,7 +3,7 @@
 const Runtime = {
   queue: [],
   lastDocs: [],
-  first: false,
+  first: true,
   cleaning: false,
   event: ''
 }
