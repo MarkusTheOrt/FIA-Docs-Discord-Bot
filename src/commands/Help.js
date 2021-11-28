@@ -19,7 +19,7 @@ class Help extends Command {
     const embed = new MessageEmbed();
     embed.title = "Help";
     for (const key in CommandHandler.commands) {
-      const cmd = CommandReader.commands[key];
+      const cmd = CommandHandler.commands[key];
       embed.addField(cmd.names[0], cmd.description, false);
     }
     msg.channel.send({ embeds: [embed] });

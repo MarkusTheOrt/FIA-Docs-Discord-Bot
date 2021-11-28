@@ -13,6 +13,8 @@ class Database {
     this.db = this.client.db(config.dbName);
     this.guilds = this.db.collection("guilds");
     this.documents = this.db.collection("documents");
+    this.events = this.db.collection("events");
+    this.threads = this.db.collection("threads");
   }
 }
 

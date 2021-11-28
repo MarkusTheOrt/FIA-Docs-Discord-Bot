@@ -13,7 +13,7 @@ client.on("ready", async () => {
 
 (async () => {
   await Database.connect();
+  RequireAll(path.join(__dirname, "./services"));
   await client.login(config.botToken);
   await RequireAll(path.join(__dirname, "./commands"));
-  await RequireAll(path.join(__dirname, "./services"));
 })().catch((err) => Log.Stack(err.stack));

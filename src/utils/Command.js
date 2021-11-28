@@ -1,5 +1,6 @@
 const Log = require("./Log.js");
 const CommandHandler = require("./CommandHandler");
+const { Message } = require("discord.js");
 
 class Command {
   constructor(
@@ -27,6 +28,13 @@ class Command {
     }
   }
 
+  /**
+   *
+   * @param {Message} msg
+   * @param {String} command
+   * @param {String[]} args
+   * @returns
+   */
   async run_internal(msg, command, args) {
     Log.Warn("Empty command called.");
     return new Promise((resolve, reject) => {

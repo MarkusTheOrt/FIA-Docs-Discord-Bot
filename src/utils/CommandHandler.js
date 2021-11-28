@@ -1,11 +1,11 @@
-const client = require("./Client");
+const Client = require("./Client");
 const Log = require("./Log");
 const Database = require("./Database");
 
 class CommandHandler {
   constructor() {
     this.commands = {};
-    client.on("messageCreate", (message) => this.handleMessage(message));
+    Client.on("messageCreate", async (message) => this.handleMessage(message));
   }
 
   registerCommand(command) {
@@ -14,20 +14,19 @@ class CommandHandler {
         Log.Warn("Command name conflict found.");
         return;
       }
-      this.commands[name] = command;
+      this.commands[name.toLowerCase()] = command;
     });
   }
 
-  async executeCommands(msg, command, args) {
+  async executeCommand(msg, command, args) {
     if (command in this.commands) {
-      await this.commands[command].run(msg, commnd, args);
+      await this.commands[command].run(msg, command, args);
     }
   }
 
   async handleMessage(message) {
     // Find Guild-Specific prefix
     const guild = await Database.guilds.findOne({ id: message.guild.id });
-    console.log(guild);
     if (guild === null) return;
     const prefix = guild.prefix;
     // Skip non-prefixed messages and Bot messages.
@@ -35,7 +34,7 @@ class CommandHandler {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    this.executeCommands(message, command, args);
+    this.executeCommand(message, command, args);
   }
 }
 
