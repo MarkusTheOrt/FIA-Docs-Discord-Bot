@@ -1,18 +1,18 @@
-const fs = require("fs");
-const path = require("path");
-const dateFormatter = require("./Date.js");
+const Fs = require("fs");
+const Path = require("path");
+const DateFormatter = require("./Date.js");
 
-const logsPath = path.join(__dirname, "../../Logs");
+const logsPath = Path.join(__dirname, "../../Logs");
 
 class Log {
   constructor() {
-    if (fs.existsSync(logsPath) === false) {
-      fs.mkdirSync(logsPath);
+    if (Fs.existsSync(logsPath) === false) {
+      Fs.mkdirSync(logsPath);
     }
 
     this.date = new Date();
-    this.writeStream = fs.createWriteStream(
-      logsPath + "/" + dateFormatter.isoDate(this.date) + ".log",
+    this.writeStream = Fs.createWriteStream(
+      logsPath + "/" + DateFormatter.isoDate(this.date) + ".log",
       { flags: "a" }
     );
   }
@@ -26,8 +26,8 @@ class Log {
   async #log(level, message) {
     if (this.date.getUTCDate() !== new Date().getUTCDate()) {
       this.date = new Date();
-      this.writeStream = fs.createWriteStream(
-        logsPath + "/" + dateFormatter.isoDate(this.date) + ".log"
+      this.writeStream = Fs.createWriteStream(
+        logsPath + "/" + DateFormatter.isoDate(this.date) + ".log"
       );
     }
 
@@ -40,7 +40,7 @@ class Log {
       });
     }
 
-    const logMessage = `[${dateFormatter.isoTime()}] ${level}: ${message}`;
+    const logMessage = `[${DateFormatter.isoTime()}] ${level}: ${message}`;
 
     console.log(logMessage);
 

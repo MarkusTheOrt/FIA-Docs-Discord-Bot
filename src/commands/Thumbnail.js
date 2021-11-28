@@ -1,7 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const Command = require("../utils/Command");
 const Perms = require("discord.js").Permissions;
-const Client = require("../utils/Client");
 const Database = require("../utils/Database");
 
 class SetThumbnail extends Command {

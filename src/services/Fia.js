@@ -1,6 +1,4 @@
 const Client = require("../utils/Client");
-const fetch = require("node-fetch");
-const cheerio = require("cheerio");
 const Moment = require("moment");
 const Config = require("../config.json");
 const Log = require("../utils/Log");

@@ -1,5 +1,4 @@
 const Client = require("../utils/Client");
-const Log = require("../utils/Log");
 const Database = require("../utils/Database");
 
 Client.on("guildUpdate", async (oldGuild, newGuild) => {
