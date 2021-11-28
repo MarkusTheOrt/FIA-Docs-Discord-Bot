@@ -15,15 +15,20 @@
   ],
   "author": "Markus Ort",
   "license": "ISC",
-  "devDependencies": {
-    "snazzy": "^9.0.0",
-    "standard": "^16.0.3"
-  },
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "bufferutil": "^4.0.5",
     "cheerio": "^1.0.0-rc.10",
-    "cron": "^1.8.2",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.3.1",
+    "erlpack": "github:discord/erlpack",
     "moment": "^2.29.1",
+    "mongodb": "^4.2.0",
     "node-fetch": "^2.6.2",
-    "pm2": "^5.1.1"
+    "utf-8-validate": "^5.0.7",
+    "zlib-sync": "^0.1.7"
+  },
+  "devDependencies": {
+    "prettier": "^2.5.0"
   }
 }

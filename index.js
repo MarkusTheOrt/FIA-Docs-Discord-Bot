@@ -1,32 +1,18 @@
-const fetchAndCheck = require('./utils/fia.js')
-const Cron = require('cron')
-const Runtime = require('./utils/runtime.js')
-const Moment = require('moment')
+const config = require("./config.json");
+const Log = require("./utils/Log.js");
+const { Client, Intents } = require("discord.js");
+const DateFormatter = require("./utils/Date.js");
+const Database = require("./utils/Database");
 
-// Run this job every minute
-const job = new Cron.CronJob('1-29,31-59 * * * *', async () => {
-  if (Runtime.cleaning) {
-    const indicesToClean = []
-    Runtime.lastDocs.forEach((item, idx) => {
-      if (item.date < Moment.tz('Europe/Berlin').subtract(1, 'days')) {
-        indicesToClean.push(idx)
-      }
-    })
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES],
+});
 
-    indicesToClean.forEach((index) => {
-      Runtime.lastDocs.splice(index, 1)
-    })
-    console.log('Running Cleanup.')
-    Runtime.cleaning = false
-  }
-  await fetchAndCheck()
-})
+client.on("ready", () => {
+  Log.Info('Logged in as "' + client.user.tag + '"');
+});
 
-const cleanJob = new Cron.CronJob('0 4 */1 * *', () => {
-  Runtime.cleaning = true
-})
-
-console.log('Started FIA-Documents-Discord-Webhook.')
-fetchAndCheck()
-job.start()
-cleanJob.start()
+(async () => {
+  await Database.connect();
+  await client.login(config.botToken);
+})().catch((err) => Log.Stack(err.stack));

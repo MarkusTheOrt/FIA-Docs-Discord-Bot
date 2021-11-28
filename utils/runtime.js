@@ -5,7 +5,7 @@ const Runtime = {
   lastDocs: [],
   first: true,
   cleaning: false,
-  event: ''
-}
+  event: "",
+};
 
-module.exports = Runtime
+module.exports = Runtime;
