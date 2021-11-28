@@ -13,9 +13,11 @@ const makeEmbed = (document, event, guild) => {
   embed.setTitle(document.title);
   embed.setColor(11615);
   embed.setAuthor("FIA Document - " + event.name);
+  embed.setDescription("");
   embed.setFooter(Moment(document.date).format("lll"));
   embed.setURL(document.url);
   embed.setThumbnail(guild.thumbnail);
+  return embed;
 };
 
 const updateDocuments = async () => {
@@ -24,25 +26,33 @@ const updateDocuments = async () => {
     const guilds = Database.guilds.find({ channel: { $gt: "" } });
     const event = await Database.events.findOne(new ObjectId(document.event));
     await guilds.forEach(async (guild) => {
-      messageOnThread(guild, event._id, {
+      messageOnThread(guild, document.event, {
         embeds: [makeEmbed(document, event, guild)],
       });
     });
-    Database.documents.updateOne(document._id, {
-      $unset: "isNew",
-    });
+    Database.documents.updateOne(
+      { _id: document._id },
+      { $unset: { isNew: "" } }
+    );
   });
 };
 
 const messageOnThread = async (guild, event, message) => {
-  const thread = await getThread(guild, event);
-  //const dsthread = await Client.channels.fetch("914455624828477441");
-  //await dsthread.send(message);
+  let thread = await getThread(guild, event);
+  if (thread === null) {
+    thread = await createThread(guild, event);
+  }
+  const channel = await Client.channels.fetch("" + thread.id, { cache: true });
+  await channel.send(message);
 };
 
 const createThread = async (guild, event) => {
-  const dbGuild = await Database.guilds.findOne({ id: guild });
-  if (!("channel" in dbGuild)) return;
+  const dbGuild = await Database.guilds.findOne({
+    id: guild.id,
+    channel: { $gt: "" },
+  });
+  console.log(dbGuild);
+  if (dbGuild === null) return null;
   const dbEvent = await Database.events.findOne(new ObjectId(event));
   const channel = Client.channels.cache.get(dbGuild.channel);
   const thread = await channel.threads.create({
@@ -54,6 +64,7 @@ const createThread = async (guild, event) => {
     event: dbEvent._id.toString(),
     id: thread.id,
   });
+  return thread.id;
 };
 
 const getThread = async (guild, event) => {
@@ -61,12 +72,13 @@ const getThread = async (guild, event) => {
     guild: guild.id,
     event: event.toString(),
   });
-  return dbThread.id;
+  return dbThread;
 };
 
 Client.on("ready", () => {
+  Log.Info("Checking documents every " + Config.fetchInterval + " Seconds.");
   updateDocuments();
-  //setInterval(updateDocuments, Config.fetchInterval * 1000);
+  setInterval(updateDocuments, Config.fetchInterval * 1000);
 });
 
 /** 
