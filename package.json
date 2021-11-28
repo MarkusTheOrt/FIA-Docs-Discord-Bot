@@ -5,9 +5,8 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "test": "standard | snazzy",
-    "start": "pm2 start index.js -n FIA-Docs",
-    "stop": "pm2 stop index.js -n FIA-Docs"
+    "start": "pm2 start src/index.js -n FIA-Docs",
+    "stop": "pm2 stop src/index.js -n FIA-Docs"
   },
   "keywords": [
     "FIA",
@@ -25,6 +24,7 @@
     "moment": "^2.29.1",
     "mongodb": "^4.2.0",
     "node-fetch": "^2.6.2",
+    "require-all": "^3.0.0",
     "utf-8-validate": "^5.0.7",
     "zlib-sync": "^0.1.7"
   },

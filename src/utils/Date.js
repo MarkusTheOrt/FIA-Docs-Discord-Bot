@@ -1,8 +1,8 @@
 class DateFormatter {
   /**
-   * Formats a date in YYYY-MM-DD string
-   * @param {Date} date date to format
-   * @returns {String} formatted String
+   * Formats a date into a YYYY-MM-DD string.
+   * @param {Date} date date to format.
+   * @returns {String} formatted String.
    */
   static isoDate(date = new Date()) {
     const year = date.getUTCFullYear();
@@ -12,6 +12,11 @@ class DateFormatter {
     return "" + year + "-" + month + "-" + day;
   }
 
+  /**
+   * Formats a date into a YYYY-MM-DDThh:mm:ssZ String.
+   * @param {Date} date date to format.
+   * @returns {String} formatted String.
+   */
   static isoTime(date = new Date()) {
     const s = this.isoDate(date);
     const hours = this.#pad(date.getUTCHours());
@@ -20,6 +25,12 @@ class DateFormatter {
     return s + "T" + hours + ":" + minutes + ":" + seconds + "Z";
   }
 
+  /**
+   * Adds Left Zero-Padding to a number
+   * @param {Number} number base Number.
+   * @param {Number} size String length.
+   * @returns {String} String containing the Padded number.
+   */
   static #pad(number, size = 2) {
     let s = number.toString();
     while (s.length < size) {
