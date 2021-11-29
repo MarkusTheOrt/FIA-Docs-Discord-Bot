@@ -10,7 +10,7 @@ const makeEmbed = (document, event, guild) => {
   const embed = new MessageEmbed();
   embed.setTitle(document.title);
   embed.setColor(11615);
-  embed.setAuthor("FIA Document - " + event.name);
+  embed.setAuthor("FIA Document");
   embed.setDescription("");
   embed.setFooter(Moment(document.date).format("lll"));
   embed.setURL(document.url);
@@ -27,7 +27,7 @@ const updateDocuments = async () => {
   for (const document in documents) {
     const guilds = Database.guilds.find({ channel: { $gt: "" } });
     const event = await Database.events.findOne(new ObjectId(document.event));
-
+    console.log(document.title);
     for (const guild in guilds) {
       await messageOnThread(guild, document.event, {
         embeds: [makeEmbed(document, event, guild)],
