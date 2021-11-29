@@ -24,16 +24,16 @@ const updateDocuments = async () => {
     { isNew: true },
     { sort: { date: 1 } }
   );
-  await documents.forEach(async (document) => {
+  await documents.forEach((document) => {
     const guilds = Database.guilds.find({ channel: { $gt: "" } });
     const event = await Database.events.findOne(new ObjectId(document.event));
-    await Promise.all(
-      guilds.forEach(async (guild) => {
-        await messageOnThread(guild, document.event, {
-          embeds: [makeEmbed(document, event, guild)],
-        });
-      })
-    );
+
+    guilds.forEach(async (guild) => {
+      await messageOnThread(guild, document.event, {
+        embeds: [makeEmbed(document, event, guild)],
+      });
+    });
+
     Database.documents.updateOne(
       { _id: document._id },
       { $unset: { isNew: "" } }
