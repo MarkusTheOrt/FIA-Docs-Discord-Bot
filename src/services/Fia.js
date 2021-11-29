@@ -44,8 +44,12 @@ const messageOnThread = async (guild, event, message) => {
   let thread = await getThread(guild, event);
   if (thread === null) {
     thread = await createThread(guild, event);
+    if (thread === null) {
+      Log.Error("Could not create Thread.");
+      return;
+    }
   }
-  const channel = await Client.channels.fetch("" + thread.id, { cache: true });
+  const channel = await Client.channels.fetch("" + thread, { cache: true });
   await channel.send(message);
 };
 
@@ -54,7 +58,6 @@ const createThread = async (guild, event) => {
     id: guild.id,
     channel: { $gt: "" },
   });
-  console.log(dbGuild);
   if (dbGuild === null) return null;
   const dbEvent = await Database.events.findOne(new ObjectId(event));
   const channel = Client.channels.cache.get(dbGuild.channel);
@@ -75,7 +78,7 @@ const getThread = async (guild, event) => {
     guild: guild.id,
     event: event.toString(),
   });
-  return dbThread;
+  return dbThread === null ? null : dbThread.id;
 };
 
 Client.on("ready", () => {
