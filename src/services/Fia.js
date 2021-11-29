@@ -27,11 +27,13 @@ const updateDocuments = async () => {
   await documents.forEach(async (document) => {
     const guilds = Database.guilds.find({ channel: { $gt: "" } });
     const event = await Database.events.findOne(new ObjectId(document.event));
-    await guilds.forEach(async (guild) => {
-      await messageOnThread(guild, document.event, {
-        embeds: [makeEmbed(document, event, guild)],
-      });
-    });
+    await Promise.all(
+      guilds.forEach(async (guild) => {
+        await messageOnThread(guild, document.event, {
+          embeds: [makeEmbed(document, event, guild)],
+        });
+      })
+    );
     Database.documents.updateOne(
       { _id: document._id },
       { $unset: { isNew: "" } }
