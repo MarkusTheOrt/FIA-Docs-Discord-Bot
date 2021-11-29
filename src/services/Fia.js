@@ -24,21 +24,21 @@ const updateDocuments = async () => {
     { isNew: true },
     { sort: { date: 1 } }
   );
-  await documents.forEach((document) => {
+  for (const document in documents) {
     const guilds = Database.guilds.find({ channel: { $gt: "" } });
     const event = await Database.events.findOne(new ObjectId(document.event));
 
-    guilds.forEach(async (guild) => {
+    for (const guild in guilds) {
       await messageOnThread(guild, document.event, {
         embeds: [makeEmbed(document, event, guild)],
       });
-    });
+    }
 
     Database.documents.updateOne(
       { _id: document._id },
       { $unset: { isNew: "" } }
     );
-  });
+  }
   Client.user.setActivity({ type: "PLAYING", name: "Idle" });
 };
 
