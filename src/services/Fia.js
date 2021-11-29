@@ -19,6 +19,7 @@ const makeEmbed = (document, event, guild) => {
 };
 
 const updateDocuments = async () => {
+  Client.user.setActivity({ type: "LISTENING", name: "for new Docs" });
   const documents = Database.documents.find(
     { isNew: true },
     { sort: { date: 1 } }
@@ -36,6 +37,7 @@ const updateDocuments = async () => {
       { $unset: { isNew: "" } }
     );
   });
+  Client.user.setActivity({ type: "PLAYING", name: "Idle" });
 };
 
 const messageOnThread = async (guild, event, message) => {

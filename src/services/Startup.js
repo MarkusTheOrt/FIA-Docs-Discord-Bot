@@ -17,9 +17,10 @@ Client.on("ready", async () => {
     }
   });
   // Cache the set channels.
-  await Database.guilds.find().forEach(async (guild) => {
-    if (!"channel" in guild) return;
-    await Client.channels.fetch(guild.channel, { cache: true });
-  });
+  await Database.guilds
+    .find({ channel: { $gt: "" } })
+    .forEach(async (guild) => {
+      await Client.channels.fetch(guild.channel, { cache: true });
+    });
   Log.Info("Startup Script Finished");
 });
