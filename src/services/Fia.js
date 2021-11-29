@@ -60,7 +60,13 @@ const createThread = async (guild, event) => {
   });
   if (dbGuild === null) return null;
   const dbEvent = await Database.events.findOne(new ObjectId(event));
+  if (dbEvent === null) return null;
   const channel = Client.channels.cache.get(dbGuild.channel);
+  const dbThread = await Database.threads.findOne({
+    guild: guild.id,
+    event: dbEvent._id.toString(),
+  });
+  if (dbThread !== null) return dbThread.id;
   const thread = await channel.threads.create({
     name: dbEvent.name,
     reason: "Created by FIA-Discord-Bot",
