@@ -12,9 +12,9 @@ const makeEmbed = (document, event, guild) => {
   embed.setColor(11615);
   embed.setAuthor("FIA Document");
   embed.setDescription("");
-  embed.setFooter(Moment(document.date).format("lll"));
   embed.setURL(document.url);
   embed.setThumbnail(guild.thumbnail);
+  embed.setTimestamp(Moment(document.date).format());
   if ("img" in document) {
     embed.setImage(Config.imgUrl + document.img + "?nocache");
   }
