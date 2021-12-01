@@ -14,10 +14,9 @@ const makeEmbed = (document, event, guild) => {
   embed.setDescription("");
   embed.setFooter(Moment(document.date).format("lll"));
   embed.setURL(document.url);
+  embed.setThumbnail(guild.thumbnail);
   if ("img" in document) {
-    embed.setThumbnail(Config.imgUrl + document.img);
-  } else {
-    embed.setThumbnail(guild.thumbnail);
+    embed.setImage(Config.imgUrl + document.img + "?nocache");
   }
 
   return embed;
