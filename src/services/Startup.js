@@ -11,7 +11,7 @@ Client.on("ready", async () => {
       const res = await Database.guilds.insertOne({
         id: guild.id,
         name: guild.name,
-        prefix: "$",
+        prefix: "|",
         thumbnail: "https://static.ort.dev/fiadontsueme/fia_logo.png",
       });
     }

@@ -16,7 +16,7 @@ const makeEmbed = (document, event, guild) => {
   embed.setThumbnail(guild.thumbnail);
   embed.setTimestamp(Moment(document.date).format());
   if ("img" in document) {
-    embed.setImage(Config.imgUrl + document.img + "?nocache");
+    embed.setImage(Config.imgUrl + document.img + "");
   }
 
   return embed;
@@ -43,7 +43,7 @@ const updateDocuments = async () => {
       { $unset: { isNew: "" } }
     );
   }
-  Client.user.setActivity({ type: "PLAYING", name: "Idle" });
+  Client.user.setActivity({ type: "WATCHING", name: "fia.com/documents" });
 };
 
 const messageOnThread = async (guild, event, message) => {

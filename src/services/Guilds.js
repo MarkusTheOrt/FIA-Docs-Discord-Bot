@@ -12,7 +12,7 @@ Client.on("guildCreate", async (guild) => {
   await Database.guilds.insertOne({
     id: guild.id,
     name: guild.name,
-    prefix: "$",
+    prefix: "|",
     thumbnail: "https://static.ort.dev/fiadontsueme/fia_logo.png",
   });
 });
