@@ -17,10 +17,26 @@ Client.on("ready", async () => {
     }
   });
   // Cache the set channels.
+
   await Database.guilds
     .find({ channel: { $gt: "" } })
     .forEach(async (guild) => {
-      await Client.channels.fetch(guild.channel, { cache: true });
+      try {
+        await Client.channels.fetch(guild.channel, { cache: true });
+      } catch (error) {
+        Log.Error(
+          "Couldn't get channel for guild '" +
+            guild.id +
+            "' (" +
+            guild.name +
+            ") -- Unsetting"
+        );
+        await Database.guilds.updateOne(
+          { id: guild.id },
+          { $unset: { channel: "" } }
+        );
+      }
     });
+
   Log.Info("Startup Script Finished");
 });

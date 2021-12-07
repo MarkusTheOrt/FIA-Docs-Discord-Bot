@@ -23,7 +23,7 @@ const makeEmbed = (document, event, guild) => {
 };
 
 const updateDocuments = async () => {
-  Client.user.setActivity({ type: "LISTENING", name: "for new Docs" });
+  Client.user.setActivity({ type: "STREAMING", name: "in new Docs" });
   const documents = Database.documents.find(
     { isNew: true },
     { sort: { date: 1 } }
@@ -55,8 +55,23 @@ const messageOnThread = async (guild, event, message) => {
       return;
     }
   }
-  const channel = await Client.channels.fetch("" + thread, { cache: true });
-  await channel.send(message);
+  try {
+    const channel = await Client.channels.fetch("" + thread, { cache: true });
+    await channel.send(message);
+  } catch (error) {
+    if (error.message === "Unknown Channel") {
+      Log.Error(
+        "Couldn't Fetch Channel '" +
+          thread +
+          "' (" +
+          guild.name +
+          ") - Skipping."
+      );
+      if ((await Database.threads.deleteOne({ id: thread })).acknowledged) {
+        Log.Info("Deleted non-existing thread from Guild " + guild.name);
+      }
+    }
+  }
 };
 
 const createThread = async (guild, event) => {
@@ -67,22 +82,26 @@ const createThread = async (guild, event) => {
   if (dbGuild === null) return null;
   const dbEvent = await Database.events.findOne(new ObjectId(event));
   if (dbEvent === null) return null;
-  const channel = Client.channels.cache.get(dbGuild.channel);
-  const dbThread = await Database.threads.findOne({
-    guild: guild.id,
-    event: dbEvent._id.toString(),
-  });
-  if (dbThread !== null) return dbThread.id;
-  const thread = await channel.threads.create({
-    name: dbEvent.name,
-    reason: "Created by FIA-Discord-Bot",
-  });
-  await Database.threads.insertOne({
-    guild: dbGuild.id,
-    event: dbEvent._id.toString(),
-    id: thread.id,
-  });
-  return thread.id;
+  try {
+    const channel = Client.channels.cache.get(dbGuild.channel);
+    const dbThread = await Database.threads.findOne({
+      guild: guild.id,
+      event: dbEvent._id.toString(),
+    });
+    if (dbThread !== null) return dbThread.id;
+    const thread = await channel.threads.create({
+      name: dbEvent.name,
+      reason: "Created by FIA-Discord-Bot",
+    });
+    await Database.threads.insertOne({
+      guild: dbGuild.id,
+      event: dbEvent._id.toString(),
+      id: thread.id,
+    });
+    return thread.id;
+  } catch (error) {
+    Log.Stack(error.stack);
+  }
 };
 
 const getThread = async (guild, event) => {
