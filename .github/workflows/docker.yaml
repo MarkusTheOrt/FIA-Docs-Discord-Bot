@@ -27,7 +27,7 @@ jobs:
           node-version: "16"
       - uses: actions/setup-python@v2
         with:
-          python-version: "3.8"
+          python-version: "3.x"
           architecture: "x64"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1

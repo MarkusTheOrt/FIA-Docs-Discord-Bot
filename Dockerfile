@@ -11,6 +11,6 @@ RUN mkdir /fia-bot
 COPY . /fia-bot
 WORKDIR /fia-bot/
 
-RUN npm install
+RUN npm ci --only-production
 
 CMD node src/index.js
