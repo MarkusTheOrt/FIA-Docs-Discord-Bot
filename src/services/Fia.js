@@ -1,6 +1,6 @@
 const Client = require("../utils/Client");
 const Moment = require("moment");
-const Config = require("../config.json");
+const Config = require("../config.js");
 const Log = require("../utils/Log");
 const { MessageEmbed } = require("discord.js");
 const Database = require("../utils/Database");

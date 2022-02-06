@@ -1,4 +1,4 @@
-const Config = require("./config.json");
+const Config = require("./config.js");
 const Log = require("./utils/Log.js");
 const Database = require("./utils/Database");
 const RequireAll = require("require-all");
