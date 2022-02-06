@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:lts
 
 ENV MONGO="mongodb://localhost:27017/"
 ENV DB="fia"
@@ -8,7 +8,7 @@ ENV IMG="https://fia.ort.dev/"
 ENV TOKEN=""
 
 RUN mkdir /fia-bot
-COPY package*.json /fia-bot
+COPY . /fia-bot
 WORKDIR /fia-bot/
 
 RUN npm ci --only-production
