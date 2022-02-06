@@ -8,7 +8,7 @@ ENV IMG="https://fia.ort.dev/"
 ENV TOKEN=""
 
 RUN mkdir /fia-bot
-COPY . /fia-bot
+COPY package*.json /fia-bot
 WORKDIR /fia-bot/
 
 RUN npm ci --only-production
