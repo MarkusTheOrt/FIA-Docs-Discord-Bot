@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:lts as build-stage
 
 ENV MONGO="mongodb://localhost:27017/"
 ENV DB="fia"

@@ -5,4 +5,5 @@ module.exports = {
   fetchInterval: process.env.FETCH || 60,
   botPerms: process.env.PERMS || 34359756800,
   imgUrl: process.env.IMG || "https://fia.ort.dev/",
+  discordAppId: process.env.DAI || "916288992452964374"
 };
