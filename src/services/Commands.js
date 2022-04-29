@@ -21,11 +21,9 @@ const commands = [
 
 Client.on("ready", async() => {
   const rest = new REST({ version: '9' }).setToken(config.botToken);
-    while(await guilds.hasNext()) {
     rest.put(Routes.applicationCommands(config.discordAppId), { body: [commands[0].toJSON()] })
       .then(() => Logger.Info("Registered Application Commands"))
       .catch(Logger.Stack)
-  }
 });
 
 Client.on("interactionCreate", async interaction => {
