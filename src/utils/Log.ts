@@ -1,17 +1,22 @@
-const Fs = require("fs");
-const Path = require("path");
-const DateFormatter = require("./Date.js");
+import * as fs from "fs";
+import path from "path";
+import DateFormatter from "./Date.js";
 
-const logsPath = Path.join(__dirname, "../../Logs");
+export type LogLevel = "ERROR" | " INFO" | " WARN" | "FATAL";
+
+const logsPath = path.join(process.cwd(), "../../Logs");
 
 class Log {
+  private date;
+  private writeStream;
+
   constructor() {
-    if (Fs.existsSync(logsPath) === false) {
-      Fs.mkdirSync(logsPath);
+    if (fs.existsSync(logsPath) === false) {
+      fs.mkdirSync(logsPath);
     }
 
     this.date = new Date();
-    this.writeStream = Fs.createWriteStream(
+    this.writeStream = fs.createWriteStream(
       logsPath + "/" + DateFormatter.isoDate(this.date) + ".log",
       { flags: "a" }
     );
@@ -23,17 +28,17 @@ class Log {
    * @param {String} message Message to log.
    * @returns {Promise} Promise that returns once log has written.
    */
-  async #log(level, message) {
+  async #log(level: LogLevel, message: string) {
     if (this.date.getUTCDate() !== new Date().getUTCDate()) {
       this.date = new Date();
-      this.writeStream = Fs.createWriteStream(
+      this.writeStream = fs.createWriteStream(
         logsPath + "/" + DateFormatter.isoDate(this.date) + ".log"
       );
     }
 
     // If stream is not writable (new file etc...) wait until it is.
     if (this.writeStream.writable === false) {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve) => {
         this.writeStream.on("open", () => {
           resolve();
         });
@@ -44,7 +49,7 @@ class Log {
 
     console.log(logMessage);
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       this.writeStream.write(logMessage + "\n", () => {
         resolve();
       });
@@ -55,7 +60,7 @@ class Log {
    * Logs a Warning.
    * @param {String} message Message to log.
    */
-  Warn(message) {
+  Warn(message: string) {
     return this.#log(" WARN", message);
   }
 
@@ -63,7 +68,7 @@ class Log {
    * Logs a Message.
    * @param {String} message Message to log.
    */
-  Info(message) {
+  Info(message: string) {
     return this.#log(" INFO", message);
   }
 
@@ -71,7 +76,7 @@ class Log {
    * Logs an Error.
    * @param {String} message Message to log.
    */
-  Error(message) {
+  Error(message: string) {
     return this.#log("ERROR", message);
   }
 
@@ -79,9 +84,9 @@ class Log {
    * Logs a Stack Trace.
    * @param {String} stack Stacktrace to log.
    */
-  Stack(stack) {
+  Stack(stack: string) {
     return this.#log("FATAL", stack);
   }
 }
 
-module.exports = new Log();
+export default new Log();
