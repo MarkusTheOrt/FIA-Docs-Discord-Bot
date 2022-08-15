@@ -27,6 +27,8 @@ const commands = [
     ),
 ];
 
+const registerCommands = () => {
+
 Client.on("ready", async () => {
   const rest = new REST({ version: "10" }).setToken(unwrap(Config.botToken));
   rest
@@ -96,3 +98,6 @@ Client.on("interactionCreate", async (interaction) => {
     }
   }
 });
+}
+
+export default registerCommands;

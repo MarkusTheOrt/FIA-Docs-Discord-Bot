@@ -1,6 +1,6 @@
 import { FindCursor, WithId } from "mongodb";
 
-import { isNone, unwrap } from "../utils/Option";
+import { isNone, unwrap } from "../utils/Option.js";
 import { dbGuild, WithChannel } from "../utils/Types.js";
 
 import Client from "../utils/Client.js";

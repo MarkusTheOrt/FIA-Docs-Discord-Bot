@@ -6,8 +6,8 @@ import { dbDocument, dbEvent, dbGuild, WithChannel } from "../utils/Types.js";
 import Client from "../utils/Client.js";
 import Database from "../utils/Database.js";
 import Try from "../utils/Try.js";
-import config from "../config.js";
 import { FindCursor, ObjectId, WithId } from "mongodb";
+import Log from "../utils/Log.js";
 
 const runner = async () => {
   const documents = Database.Documents.find({ notified: { $exists: false } });
@@ -51,7 +51,10 @@ const findThread = async (
   const channel = await findChannel(guild.channel);
   if (isNone(channel)) return none;
   const thread = await Try(unwrap(channel).threads.fetch(id));
-  if (isNone(thread)) return none;
+  if (isNone(thread)) {
+    Log.Error("Couldn't fetch thread.");
+    return none;
+  }
   if (unwrap(thread).isText() && unwrap(thread).isThread()) {
     return thread as Option<ThreadChannel>;
   }
@@ -70,7 +73,7 @@ const createThread = async (
   if (isNone(thread)) return none;
   Database.Threads.insertOne({
     guild: guild.id,
-    event: event._id?.toString(),
+    event: event._id.toString(),
     id: unwrap(thread).id,
   });
   return thread;
@@ -82,7 +85,7 @@ const findDBThread = async (
 ) => {
   const thread = await Try(
     Database.Threads.findOne({
-      guild: guild.channel,
+      guild: guild.id,
       event: event._id?.toString(),
     })
   );
@@ -107,8 +110,8 @@ const makeEmbed = (document: dbDocument, guild: dbGuild) => {
     .setDescription("")
     .setURL(document.url)
     .setThumbnail(guild.thumbnail)
-    .setTimestamp(document.date / 1000)
-    .setImage(config.imgUrl + document.img);
+    .setTimestamp(document.date)
+    .setImage(document.img);
 
   return embed;
 };

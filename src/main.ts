@@ -6,11 +6,15 @@ import Client from "./utils/Client.js";
 import Database from "./utils/Database.js";
 import Log from "./utils/Log.js";
 import runner from "./services/Fia.js";
+import registerCommands from "./services/Commands.js";
 
 (async () => {
+  StartupScripts();
+  GuildScripts();
+  registerCommands();
   Client.on("ready", async () => {
     Log.Info('Logged in as "' + Client.user?.tag + '"');
-    StartupScripts();
+    
     Client.user?.setActivity({ type: "WATCHING", name: "fia.com/documents" });
     Log.Info("Starting Runner.");
     for (;;) {
@@ -29,8 +33,7 @@ import runner from "./services/Fia.js";
     await Log.Error("MongoDB Connection string not set, can't continue.");
     return;
   }
-
-  GuildScripts();
+  
   await Database.connect();
   await Client.login(unwrap(Config.botToken));
 })().catch((err) => Log.Stack(err.stack));

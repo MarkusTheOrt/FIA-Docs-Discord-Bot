@@ -1,3 +1,4 @@
+import Log from "./Log.js";
 import { none, Option, some } from "./Option.js";
 
 export default async <T>(
@@ -6,10 +7,10 @@ export default async <T>(
   try {
     const data = await promise;
     if (data === null || data === undefined)
-      return none as Option<Awaited<Exclude<T, null | undefined>>>;
+      return none;
     return some(data) as Option<Awaited<Exclude<T, null | undefined>>>;
   } catch (e){
-    console.log(e);
+    Log.Stack(e as string);
     return none as Option<Exclude<T, null | undefined>>;
   }
 };
