@@ -31,7 +31,7 @@ class DateFormatter {
    * @param {Number} size String length.
    * @returns {String} String containing the Padded number.
    */
-  static #pad(number, size = 2) {
+  static #pad(number: number, size = 2) {
     let s = number.toString();
     while (s.length < size) {
       s = "0" + s;
@@ -40,4 +40,4 @@ class DateFormatter {
   }
 }
 
-module.exports = DateFormatter;
+export default DateFormatter;
