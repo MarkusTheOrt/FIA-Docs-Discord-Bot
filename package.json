@@ -26,7 +26,7 @@
     "discord.js": "^13.6.0",
     "erlpack": "github:discord/erlpack",
     "mongodb": "^4.2.0",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^3.2.10",
     "require-all": "^3.0.0",
     "utf-8-validate": "^5.0.9",
     "zlib-sync": "^0.1.7"

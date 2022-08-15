@@ -1,120 +1,116 @@
-// //const Client = require("../utils/Client");
-// //const Moment = require("moment");
-// //const Config = require("../config.js");
-// //const Log = require("../utils/Log");
-// //const { MessageEmbed } = require("discord.js");
-// //const Database = require("../utils/Database");
-// //const { ObjectId } = require("mongodb");
-// import Client from "../utils/Client.js";
+import { MessageEmbed, TextChannel, ThreadChannel } from "discord.js";
 
-// const makeEmbed = (document, event, guild) => {
-//   const embed = new MessageEmbed();
-//   embed.setTitle(document.title);
-//   embed.setColor(11615);
-//   embed.setAuthor("FIA Document");
-//   embed.setDescription("");
-//   embed.setURL(document.url);
-//   embed.setThumbnail(guild.thumbnail);
-//   embed.setTimestamp(Moment(document.date).format());
-//   if ("img" in document) {
-//     embed.setImage(Config.imgUrl + document.img + "");
-//   }
+import { isNone, none, Option, unwrap } from "../utils/Option.js";
+import { dbDocument, dbEvent, dbGuild, WithChannel } from "../utils/Types.js";
 
-//   return embed;
-// };
+import Client from "../utils/Client.js";
+import Database from "../utils/Database.js";
+import Try from "../utils/Try.js";
+import config from "../config.js";
+import { FindCursor, ObjectId, WithId } from "mongodb";
 
-// const updateDocuments = async () => {
-//   Client.user.setActivity({ type: "STREAMING", name: "in new Docs" });
-//   const documents = Database.documents.find(
-//     { isNew: true },
-//     { sort: { date: 1 } }
-//   );
-//   for (const document of await documents.toArray()) {
-//     const guilds = Database.guilds.find({ channel: { $gt: "" } });
-//     const event = await Database.events.findOne(new ObjectId(document.event));
+const runner = async () => {
+  const documents = Database.Documents.find({ notified: { $exists: false } });
 
-//     for (const guild of await guilds.toArray()) {
-//       await messageOnThread(guild, document.event, {
-//         embeds: [makeEmbed(document, event, guild)],
-//       });
-//     }
+  while (await documents.hasNext()) {
+    const guilds = Database.Guilds.find({
+      channel: { $exists: true },
+    }) as FindCursor<WithId<WithChannel<dbGuild>>>;
+    const document = await Try(documents.next());
+    const event = await Try(
+      Database.Events.findOne({ _id: new ObjectId(unwrap(document).event) })
+    );
+    // Skip Docs without events because that would be weird.
+    if (isNone(event)) continue;
+    // Post document
+    while (await guilds.hasNext()) {
+      const guild = await Try(guilds.next());
+      if (isNone(guild)) continue;
+      const thread = await findDBThread(unwrap(guild), unwrap(event));
+      if (isNone(thread)) continue;
+      await Try(
+        unwrap(thread).send({
+          embeds: [makeEmbed(unwrap(document), unwrap(guild))],
+        })
+      );
+    }
+    await Try(
+      Database.Documents.updateOne(
+        { _id: unwrap(document)._id },
+        { $set: { notified: true } }
+      )
+    );
+  }
+  return;
+};
 
-//     Database.documents.updateOne(
-//       { _id: document._id },
-//       { $unset: { isNew: "" } }
-//     );
-//   }
-//   Client.user.setActivity({ type: "WATCHING", name: "fia.com/documents" });
-// };
+const findThread = async (
+  guild: WithChannel<dbGuild>,
+  id: string
+): Promise<Option<ThreadChannel>> => {
+  const channel = await findChannel(guild.channel);
+  if (isNone(channel)) return none;
+  const thread = await Try(unwrap(channel).threads.fetch(id));
+  if (isNone(thread)) return none;
+  if (unwrap(thread).isText() && unwrap(thread).isThread()) {
+    return thread as Option<ThreadChannel>;
+  }
+  return none;
+};
 
-// const messageOnThread = async (guild, event, message) => {
-//   let thread = await getThread(guild, event);
-//   if (thread === null) {
-//     thread = await createThread(guild, event);
-//     if (thread === null) {
-//       Log.Error("Could not create Thread.");
-//       return;
-//     }
-//   }
-//   try {
-//     const channel = await Client.channels.fetch("" + thread, { cache: true });
-//     await channel.send(message);
-//   } catch (error) {
-//     if (error.message === "Unknown Channel") {
-//       Log.Error(
-//         "Couldn't Fetch Channel '" +
-//           thread +
-//           "' (" +
-//           guild.name +
-//           ") - Skipping."
-//       );
-//       if ((await Database.threads.deleteOne({ id: thread })).acknowledged) {
-//         Log.Info("Deleted non-existing thread from Guild " + guild.name);
-//       }
-//     }
-//   }
-// };
+const createThread = async (
+  guild: WithChannel<dbGuild>,
+  event: WithId<dbEvent>
+): Promise<Option<ThreadChannel>> => {
+  const channel = await findChannel(guild.channel);
+  if (isNone(channel)) return none;
+  const thread = await Try(
+    unwrap(channel).threads.create({ name: `${event.year} ${event.name}` })
+  );
+  if (isNone(thread)) return none;
+  Database.Threads.insertOne({
+    guild: guild.id,
+    event: event._id?.toString(),
+    id: unwrap(thread).id,
+  });
+  return thread;
+};
 
-// const createThread = async (guild, event) => {
-//   const dbGuild = await Database.guilds.findOne({
-//     id: guild.id,
-//     channel: { $gt: "" },
-//   });
-//   if (dbGuild === null) return null;
-//   const dbEvent = await Database.events.findOne(new ObjectId(event));
-//   if (dbEvent === null) return null;
-//   try {
-//     const channel = Client.channels.cache.get(dbGuild.channel);
-//     const dbThread = await Database.threads.findOne({
-//       guild: guild.id,
-//       event: dbEvent._id.toString(),
-//     });
-//     if (dbThread !== null) return dbThread.id;
-//     const thread = await channel.threads.create({
-//       name: dbEvent.name,
-//       reason: "Created by FIA-Discord-Bot",
-//     });
-//     await Database.threads.insertOne({
-//       guild: dbGuild.id,
-//       event: dbEvent._id.toString(),
-//       id: thread.id,
-//     });
-//     return thread.id;
-//   } catch (error) {
-//     Log.Stack(error.stack);
-//   }
-// };
+const findDBThread = async (
+  guild: WithChannel<dbGuild>,
+  event: WithId<dbEvent>
+) => {
+  const thread = await Try(
+    Database.Threads.findOne({
+      guild: guild.channel,
+      event: event._id?.toString(),
+    })
+  );
+  if (isNone(thread)) return createThread(guild, event);
+  return findThread(guild, unwrap(thread).id);
+};
 
-// const getThread = async (guild, event) => {
-//   const dbThread = await Database.threads.findOne({
-//     guild: guild.id,
-//     event: event.toString(),
-//   });
-//   return dbThread === null ? null : dbThread.id;
-// };
+const findChannel = async (id: string): Promise<Option<TextChannel>> => {
+  const channel = await Try(Client.channels.fetch(id));
+  if (isNone(channel)) return none;
+  if (unwrap(channel).isText()) {
+    return channel as Option<TextChannel>;
+  }
+  return none;
+};
 
-// Client.on("ready", () => {
-//   Log.Info("Checking documents every " + Config.fetchInterval + " Seconds.");
-//   updateDocuments();
-//   setInterval(updateDocuments, Config.fetchInterval * 1000);
-// });
+const makeEmbed = (document: dbDocument, guild: dbGuild) => {
+  const embed = new MessageEmbed()
+    .setTitle(document.title)
+    .setColor(11615)
+    .setAuthor({ name: "FIA Document" })
+    .setDescription("")
+    .setURL(document.url)
+    .setThumbnail(guild.thumbnail)
+    .setTimestamp(document.date / 1000)
+    .setImage(config.imgUrl + document.img);
+
+  return embed;
+};
+
+export default runner;
