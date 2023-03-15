@@ -6,6 +6,7 @@ export interface dbGuild {
   name: string;
   thumbnail: string;
   channel?: string;
+  role?: string;
 }
 
 export interface dbChannel {
