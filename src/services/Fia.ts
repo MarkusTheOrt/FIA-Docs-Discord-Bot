@@ -30,6 +30,10 @@ const runner = async () => {
       if (isNone(thread)) continue;
       await Try(
         unwrap(thread).send({
+          // If the guild has set up role mentions, mention the role
+          ...(unwrap(guild).role
+            ? { content: `<@&${unwrap(guild).role}>` }
+            : {}),
           embeds: [makeEmbed(unwrap(document), unwrap(guild))],
         })
       );
