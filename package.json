@@ -21,27 +21,27 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^0.4.1",
-    "bufferutil": "^4.0.6",
-    "discord-api-types": "^0.32.0",
-    "discord.js": "^13.6.0",
+    "bufferutil": "^4.0.7",
+    "discord-api-types": "^0.32.1",
+    "discord.js": "^13.16.0",
     "erlpack": "github:discord/erlpack",
-    "mongodb": "^4.2.0",
-    "node-fetch": "^3.2.10",
+    "mongodb": "^4.16.0",
+    "node-fetch": "^3.3.1",
     "require-all": "^3.0.0",
-    "utf-8-validate": "^5.0.9",
-    "zlib-sync": "^0.1.7"
+    "utf-8-validate": "^5.0.10",
+    "zlib-sync": "^0.1.8"
   },
   "devDependencies": {
-    "@types/node": "^18.6.2",
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
-    "eslint": "^8.20.0",
-    "eslint-config-prettier": "^8.5.0",
-    "husky": "^8.0.1",
-    "nodemon": "^2.0.19",
-    "prettier": "^2.7.1",
+    "@types/node": "^18.16.18",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "husky": "^8.0.3",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.9.5"
   },
   "engines": {
     "node": ">=16.0.0",
