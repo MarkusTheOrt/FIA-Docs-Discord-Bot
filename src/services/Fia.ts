@@ -16,7 +16,7 @@ const runner = async () => {
         const guilds = Database.Guilds.find({
             channel: { $exists: true },
         }) as FindCursor<WithId<WithChannel<dbGuild>>>;
-        let [document, fetch_err] = await TryHarder(documents.next());
+        const [document, fetch_err] = await TryHarder(documents.next());
         if (fetch_err !== null || document === null) {
             if (fetch_err !== null) {
                 console.log("Error Fetching Documents:\n", fetch_err);
@@ -34,7 +34,7 @@ const runner = async () => {
         }
 
         // mark document as posted before we post... learned that the hard way KEKW
-        let [_, err] = await TryHarder(
+        const [_, err] = await TryHarder(
             Database.Documents.updateOne(
                 { _id: document._id },
                 { $set: { notified: true } }

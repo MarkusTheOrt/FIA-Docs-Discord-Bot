@@ -15,12 +15,12 @@ export default async <T>(
     }
 };
 
-async function TryHarder<T>(promise: Promise<T>): Promise<[T | null, any | null]> {
+async function TryHarder<T>(promise: Promise<T>): Promise<[T | null, Error | null]> {
     try {
         const data = await promise;
         return [data, null];
     } catch (e) {
-        return [null, e];
+        return [null, e as Error];
     }
 }
 
